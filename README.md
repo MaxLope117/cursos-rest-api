@@ -11,11 +11,12 @@ Rellenar USER y PASSWORD con sus propios datos correspondientes a sus credencial
 
 ## Conectar la base de datos.
 1. Renombrar el archivo *.env.example* por *.env*
-2. Escribir el valor de las variables con los datos correspondientes a su propia base de datos.
+2. Escribir el valor de las variables con los datos correspondientes a su propia base de datos..
+- SERVER_PORT=(PUERTO DEL SERVIDOR)
 - HOST=(HOST DE LA BASE DE DATOS)
 - USER=(USUARIO DE LA BASE DE DATOS)
 - PASSWORD=(CONTRASEÑA DE LA BASE DE DATOS)
-- PORT=(PUERTO DE LA BASE DE DATOS)
+- DB_PORT=(PUERTO DE LA BASE DE DATOS)
 - DATABASE_NAME=(NOMBRE DE LA BASE DE DATOS)
 Valores por defecto y sugeridos fueron rellenados.
 
