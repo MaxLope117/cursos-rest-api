@@ -104,7 +104,7 @@ export const putCursoPorId = async (req, res) => {
             const nuevoCurso = Object.assign(curso, body);
             const { nombre, autor, duracion, clases} = nuevoCurso
 
-            await pool.query('UPDATE cursos SET nombre = ?, autor = ?, duracion = ?, clases = ?', [nombre, autor, duracion, clases]);
+            await pool.query('UPDATE cursos SET nombre = ?, autor = ?, duracion = ?, clases = ? WHERE id = ?', [nombre, autor, duracion, clases, id]);
     
             return res.status(200).json({
                 ok,
