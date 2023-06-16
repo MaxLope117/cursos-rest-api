@@ -15,35 +15,60 @@ app.use(express.json());
 //* GET (todo).
 app.get('/cursos', async (req, res) => {
 
-    const resultado = await pool.query('SELECT * FROM cursos')
+    try {
+        
+        const resultado = await pool.query('SELECT * FROM cursos')
+    
+        return res.status(200).json({
+            ok: true,
+            cursos: resultado[0],
+        });
 
-    res.json({
-        ok: true,
-        cursos: resultado[0],
-    });
+    } catch (error) {
+
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            message: 'Algo salió mal'
+        });
+        
+    }
+
 
 });
 
 //* GET por ID.
 app.get('/cursos/:id', async (req, res) => {
 
-    const id = req.params.id;
+    const { id } = req.params;
 
-    const { ok, curso } = await existeCursoPorId(id);
+    try {
+    
+        const { ok, curso } = await existeCursoPorId(id);
+    
+        if(ok) {
+    
+            return res.status(200).json({
+                ok,
+                curso,
+            });
+    
+        }
 
-    if(ok) {
-
-        return res.json({
+        return res.status(404).json({
             ok,
-            curso,
+            message: `El curso con el ID: ${ id }, no fue encontrado`,
         });
 
-    }
+    } catch (error) {
 
-    return res.json({
-        ok: false,
-        message: `El curso con el ID: ${ id }, no fue encontrado`,
-    });
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            message: 'Algo salió mal'
+        });
+        
+    }
     
 });
 
@@ -63,53 +88,115 @@ app.post('/cursos', [
 ], async (req, res) => {
 
     const { nombre, autor, duracion = 0.0, clases = 0 } = req.body;
-    
-    const [ rows ] = await pool.query('INSERT INTO cursos (nombre, autor, duracion, clases) VALUES (?, ?, ?, ?)', [nombre, autor, duracion, clases]);
 
-    res.json({
-        ok: true,
-        message: 'Curso creado con éxito',
-        curso: {
-            id: rows.insertId,
-            nombre,
-            autor,
-            duracion,
-            clases,            
-        },
-    });
+    try {
+        
+        const [ rows ] = await pool.query('INSERT INTO cursos (nombre, autor, duracion, clases) VALUES (?, ?, ?, ?)', [nombre, autor, duracion, clases]);
+    
+        res.status(201).json({
+            ok: true,
+            message: 'Curso creado con éxito',
+            curso: {
+                id: rows.insertId,
+                nombre,
+                autor,
+                duracion,
+                clases,            
+            },
+        });
+
+    } catch (error) {
+
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            message: 'Algo salió mal'
+        });
+        
+    }
+    
 
 });
 
 //* PUT por ID.
 app.put('/cursos/:id', async (req, res) => {
 
-    const id = req.params.id;
+    const { id } = req.params;
+    const body = req.body;
+
+    try {
+        
+        const { ok, curso } = await existeCursoPorId(id);
+    
+        if(ok) {
+            
+            const nuevoCurso = Object.assign(curso, body);
+            const { nombre, autor, duracion, clases} = nuevoCurso
+
+            await pool.query('UPDATE cursos SET nombre = ?, autor = ?, duracion = ?, clases = ?', [nombre, autor, duracion, clases]);
+    
+            return res.status(200).json({
+                ok,
+                message: 'Curso actualizado con éxito',
+                new_course: nuevoCurso,
+            });
+    
+        }
+    
+        return res.status(404).json({
+            ok: false,
+            message: `El curso con el ID: ${ id }, no fue encontrado`,
+        });
+
+    } catch (error) {
+
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            message: 'Algo salió mal'
+        });
+        
+    }
+
 
 });
 
 //* DELETE por ID.
 app.delete('/cursos/:id', async (req, res) => {
 
-    const id = req.params.id;
+    const { id } = req.params;
 
-    const { ok, curso } = await existeCursoPorId(id);
+    try {
+        
+        const { ok, curso } = await existeCursoPorId(id);
+    
+        if(ok) {
+    
+            await pool.query(`DELETE FROM cursos WHERE id=${ id }`);
+    
+            return res.status(200).json({
+                ok,
+                message: 'Curso eliminado con éxito',
+                curso,
+            });
+    
+        }
+    
+        return res.status(404).json({
+            ok: false,
+            message: `El curso con el ID: ${ id }, no fue encontrado`,
+        });
 
-    if(ok) {
+    } catch (error) {
 
-        await pool.query(`DELETE FROM cursos WHERE id=${ id }`);
-
-        return res.json({
-            ok,
-            message: 'Curso eliminado con éxito',
-            curso,
-        })
-
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            message: 'Algo salió mal'
+        });
+        
     }
 
-    return res.json({
-        ok: false,
-        message: `El curso con el ID: ${ id }, no fue encontrado`,
-    });
 
 });
 
