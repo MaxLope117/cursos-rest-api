@@ -17,6 +17,7 @@ Rellenar USER y PASSWORD con sus propios datos correspondientes a sus credencial
 - PASSWORD=(CONTRASEÑA DE LA BASE DE DATOS)
 - PORT=(PUERTO DE LA BASE DE DATOS)
 - DATABASE_NAME=(NOMBRE DE LA BASE DE DATOS)
+Valores por defecto y sugeridos fueron rellenados.
 
 ## Desplegar el proyecto en localhost.
 1. Abrir una terminal en la raíz del proyecto.
